@@ -1,2 +1,2 @@
 # SampleProject
-SampleProject
+DataGenerator
