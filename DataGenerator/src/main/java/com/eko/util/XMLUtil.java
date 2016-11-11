@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class XMLUtil {
 
-	public static <T> String printAsXml(T t) {
+	public static <T> String getXMLString(T t) {
 		JAXBContext context;
 		try {
 			StringWriter tw = new StringWriter();
