@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class XMLUtil {
+public class FormatUtil {
 
 	public static <T> String getXMLString(T t) {
 		JAXBContext context;

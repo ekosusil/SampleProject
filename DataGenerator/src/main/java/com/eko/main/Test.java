@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,25 +17,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.eko.process.ProductGenerator;
+import com.eko.util.FormatUtil;
 import com.eko.util.OutputUtil;
-import com.eko.util.XMLUtil;
 
 public class Test {
 
 	public static Map<String, BiFunction<String, Map<String, Integer>, List<? extends Object>>> resultFunction = new HashMap<>();
-	public static Map<String, Consumer<Object>> downstream = new HashMap<>();
+	public static Map<String, BiConsumer<String,Object>> downstream = new HashMap<>();
 	public static Map<String, Function<Object, String>> formatFunction = new HashMap<>();
 	private static Logger log = LoggerFactory.getLogger(Test.class);
 
 	static {
 		resultFunction.put("product", (path, mapping) -> ProductGenerator.generateProduct(path, mapping));
-		formatFunction.put("xml", XMLUtil::getXMLString);
-		formatFunction.put("json", XMLUtil::getJsonString);
-		downstream.put("console", OutputUtil::writeToConsole);
+		formatFunction.put("xml", FormatUtil::getXMLString);
+		formatFunction.put("json", FormatUtil::getJsonString);
+		downstream.put("console", (object,item)->OutputUtil.writeToConsole(object, item));
+		downstream.put("file", (object,item)->OutputUtil.writeToFile(object, item));
+
 	}
 
 	public static void main(String arg[]) {
-
 		String useCase = arg[0].toLowerCase();
 		String format = arg[1].toLowerCase();
 		String output = arg[2].toLowerCase();
@@ -54,7 +55,7 @@ public class Test {
 			resultFunction.get(useCase).andThen(mapping)
 					.apply(System.getProperty(useCase + ".sourceFile"),
 							parseMapping(System.getProperty(useCase + ".mapping")))
-					.forEach(elt -> downstream.get(output).accept(elt));
+					.forEach(elt -> downstream.get(output).accept(useCase,elt));
 		}
 	}
 
